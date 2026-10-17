@@ -1,0 +1,2 @@
+# canvagugus1
+KKG GUGUS 1 KECAMATAN BEDUAI

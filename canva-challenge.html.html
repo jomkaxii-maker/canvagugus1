@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Canva Teacher Challenge - KKG Gugus 1 Kecamatan Beduai</title>
+<style>
+  :root{
+    --ungu:#7C3AED;
+    --biru:#3B82F6;
+    --toska:#14B8A6;
+    --kuning:#FBBF24;
+    --merah:#EF4444;
+    --hijau:#10B981;
+    --putih:#FFFFFF;
+    --gelap:#1E1B4B;
+    --abu:#F3F4F6;
+    --shadow:0 10px 30px rgba(124,58,237,.25);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI','Trebuchet MS',sans-serif}
+  html,body{height:100%}
+  body{
+    background:linear-gradient(135deg,#7C3AED 0%,#3B82F6 50%,#14B8A6 100%);
+    min-height:100vh;
+    color:var(--gelap);
+    overflow-x:hidden;
+    padding:16px;
+  }
+  /* Floating shapes */
+  .bg-shapes{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+  .bg-shapes span{
+    position:absolute;display:block;font-size:2rem;opacity:.15;
+    animation:float 15s linear infinite;
+  }
+  .bg-shapes span:nth-child(1){left:10%;animation-delay:0s;top:-10%}
+  .bg-shapes span:nth-child(2){left:25%;animation-delay:3s;top:-10%;font-size:2.5rem}
+  .bg-shapes span:nth-child(3){left:45%;animation-delay:6s;top:-10%}
+  .bg-shapes span:nth-child(4){left:65%;animation-delay:2s;top:-10%;font-size:3rem}
+  .bg-shapes span:nth-child(5){left:80%;animation-delay:5s;top:-10%}
+  .bg-shapes span:nth-child(6){left:90%;animation-delay:8s;top:-10%;font-size:2.2rem}
+  @keyframes float{
+    0%{transform:translateY(0) rotate(0)}
+    100%{transform:translateY(110vh) rotate(360deg)}
+  }
+  .app{
+    position:relative;z-index:1;
+    max-width:1100px;margin:0 auto;
+  }
+  .header{
+    text-align:center;color:white;margin-bottom:16px;
+  }
+  .header .kkg{
+    display:inline-block;background:rgba(255,255,255,.2);
+    padding:6px 18px;border-radius:999px;font-weight:600;
+    backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.3);
+    font-size:.9rem;letter-spacing:.5px;
+  }
+  .header h1{
+    font-size:clamp(1.6rem,4vw,2.6rem);margin-top:10px;
+    text-shadow:0 3px 10px rgba(0,0,0,.2);
+  }
+  .header h2{
+    font-size:clamp(.9rem,2vw,1.1rem);font-weight:400;opacity:.95;margin-top:4px;
+  }
+  .card{
+    background:white;border-radius:24px;padding:28px;
+    box-shadow:var(--shadow);
+    animation:pop .5s ease;
+  }
+  @keyframes pop{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+  .screen{display:none}
+  .screen.active{display:block}
+
+  /* Welcome */
+  .welcome{text-align:center}
+  .welcome .hero{
+    font-size:1.05rem;color:#4B5563;margin:12px auto 22px;max-width:680px;line-height:1.6;
+  }
+  .welcome .hero strong{color:var(--ungu)}
+  .form-row{
+    display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;
+  }
+  @media(max-width:600px){.form-row{grid-template-columns:1fr}}
+  .field label{display:block;text-align:left;font-weight:600;margin-bottom:6px;color:#374151;font-size:.9rem}
+  .field input{
+    width:100%;padding:12px 14px;border:2px solid #E5E7EB;border-radius:12px;
+    font-size:1rem;transition:.2s;background:#F9FAFB;
+  }
+  .field input:focus{outline:none;border-color:var(--ungu);background:white}
+  .btn-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:10px}
+  .btn{
+    padding:14px 26px;border:none;border-radius:14px;cursor:pointer;
+    font-size:1rem;font-weight:700;color:white;
+    transition:transform .15s, box-shadow .2s;
+    display:inline-flex;align-items:center;gap:8px;
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.2)}
+  .btn:active{transform:translateY(0)}
+  .btn-primary{background:linear-gradient(135deg,var(--ungu),var(--biru));font-size:1.1rem;padding:16px 32px}
+  .btn-secondary{background:var(--toska)}
+  .btn-warning{background:var(--kuning);color:#1E1B4B}
+  .btn-danger{background:var(--merah)}
+  .btn-ghost{background:#E5E7EB;color:#1E1B4B}
+  .btn-sm{padding:10px 16px;font-size:.9rem}
+
+  /* Modal */
+  .modal{
+    position:fixed;inset:0;background:rgba(0,0,0,.6);
+    display:none;align-items:center;justify-content:center;z-index:100;padding:16px;
+  }
+  .modal.active{display:flex;animation:fade .25s}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .modal .box{
+    background:white;border-radius:20px;padding:26px;max-width:560px;width:100%;
+    max-height:90vh;overflow-y:auto;
+  }
+  .modal h3{color:var(--ungu);margin-bottom:12px;font-size:1.4rem}
+  .modal ul{margin:10px 0 16px 20px;line-height:1.8;color:#374151}
+  .modal .close-row{text-align:right}
+
+  /* Game */
+  .game-top{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-bottom:14px;flex-wrap:wrap;gap:10px;
+  }
+  .stat{
+    background:linear-gradient(135deg,var(--ungu),var(--biru));
+    color:white;padding:10px 16px;border-radius:12px;
+    font-weight:700;font-size:.95rem;
+    display:flex;align-items:center;gap:8px;
+    box-shadow:0 4px 10px rgba(0,0,0,.1);
+  }
+  .stat.timer{background:linear-gradient(135deg,var(--toska),var(--biru))}
+  .stat.score{background:linear-gradient(135deg,var(--kuning),#F59E0B);color:#1E1B4B}
+  .stat.danger{background:linear-gradient(135deg,var(--merah),#B91C1C)}
+  .progress{
+    height:10px;background:#E5E7EB;border-radius:999px;overflow:hidden;margin-bottom:18px;
+  }
+  .progress-bar{
+    height:100%;background:linear-gradient(90deg,var(--kuning),var(--toska),var(--biru));
+    width:0;transition:width .4s;
+  }
+  .question-wrap{
+    display:grid;grid-template-columns:1fr 1.2fr;gap:20px;align-items:center;
+  }
+  @media(max-width:760px){.question-wrap{grid-template-columns:1fr}}
+  .q-image{
+    background:linear-gradient(135deg,#EDE9FE,#DBEAFE);
+    border-radius:18px;padding:20px;display:flex;align-items:center;justify-content:center;
+    min-height:220px;border:3px dashed #C4B5FD;
+  }
+  .q-image svg{width:100%;max-width:220px;height:auto}
+  .q-text{
+    font-size:1.2rem;font-weight:700;color:var(--gelap);line-height:1.4;
+    margin-bottom:16px;
+  }
+  .q-text .qnum{
+    display:inline-block;background:var(--ungu);color:white;
+    padding:4px 12px;border-radius:10px;font-size:.9rem;margin-right:8px;
+  }
+  .options{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:500px){.options{grid-template-columns:1fr}}
+  .option{
+    background:white;border:3px solid #E5E7EB;border-radius:14px;
+    padding:14px 16px;cursor:pointer;font-weight:600;font-size:1rem;
+    text-align:left;transition:.2s;color:#1E1B4B;
+    display:flex;align-items:center;gap:10px;
+  }
+  .option:hover:not(.disabled){border-color:var(--ungu);transform:translateY(-2px);background:#F5F3FF}
+  .option .letter{
+    background:var(--ungu);color:white;width:32px;height:32px;
+    border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-weight:800;flex-shrink:0;
+  }
+  .option.correct{background:#D1FAE5;border-color:var(--hijau);color:#065F46}
+  .option.correct .letter{background:var(--hijau)}
+  .option.wrong{background:#FEE2E2;border-color:var(--merah);color:#991B1B}
+  .option.wrong .letter{background:var(--merah)}
+  .option.disabled{cursor:not-allowed;opacity:.85}
+
+  .feedback{
+    margin-top:16px;padding:12px 16px;border-radius:12px;
+    font-weight:700;text-align:center;display:none;
+  }
+  .feedback.show{display:block;animation:pop .3s}
+  .feedback.ok{background:#D1FAE5;color:#065F46}
+  .feedback.no{background:#FEE2E2;color:#991B1B}
+
+  /* Result */
+  .result{text-align:center}
+  .trophy{font-size:5rem;animation:bounce 1.2s infinite}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+  .result h2{color:var(--ungu);margin:10px 0;font-size:1.8rem}
+  .result .title-cat{
+    display:inline-block;background:linear-gradient(135deg,var(--kuning),#F59E0B);
+    color:#1E1B4B;padding:10px 24px;border-radius:999px;font-weight:800;
+    font-size:1.3rem;margin:10px 0;box-shadow:0 6px 14px rgba(0,0,0,.15);
+  }
+  .score-big{
+    font-size:3.5rem;font-weight:900;color:var(--ungu);
+    text-shadow:2px 2px 0 var(--kuning);
+  }
+  .stats-grid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+    gap:12px;margin:18px 0;
+  }
+  .stat-card{
+    background:linear-gradient(135deg,#EDE9FE,#DBEAFE);
+    padding:14px;border-radius:14px;
+  }
+  .stat-card .label{font-size:.8rem;color:#6B7280;font-weight:600}
+  .stat-card .value{font-size:1.6rem;font-weight:800;color:var(--ungu)}
+  .note{
+    background:#FEF3C7;border-left:4px solid var(--kuning);
+    padding:12px 16px;border-radius:10px;margin:14px 0;
+    font-size:.9rem;color:#78350F;text-align:left;
+  }
+
+  /* Review */
+  .review-item{
+    background:#F9FAFB;border-radius:14px;padding:16px;margin-bottom:12px;
+    border-left:5px solid var(--ungu);text-align:left;
+  }
+  .review-item.ok{border-color:var(--hijau)}
+  .review-item.no{border-color:var(--merah)}
+  .review-item .q{font-weight:700;margin-bottom:8px;color:var(--gelap)}
+  .review-item .ans{font-size:.9rem;color:#374151;margin:3px 0}
+  .review-item .ans b{color:var(--hijau)}
+  .review-item .ans.wrong b{color:var(--merah)}
+
+  /* Dashboard */
+  .dash-header{
+    display:flex;justify-content:space-between;align-items:center;
+    flex-wrap:wrap;gap:10px;margin-bottom:16px;
+  }
+  .dash-summary{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:12px;margin-bottom:16px;
+  }
+  .dash-summary .stat-card{background:linear-gradient(135deg,var(--ungu),var(--biru));color:white}
+  .dash-summary .stat-card .label{color:rgba(255,255,255,.85)}
+  .dash-summary .stat-card .value{color:white}
+  table{width:100%;border-collapse:collapse;background:white;border-radius:12px;overflow:hidden}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid #E5E7EB;font-size:.9rem}
+  th{background:var(--ungu);color:white;font-weight:700}
+  tr:last-child td{border-bottom:none}
+  .table-wrap{overflow-x:auto}
+  .empty{text-align:center;padding:30px;color:#9CA3AF}
+
+  /* Confetti */
+  .confetti{
+    position:fixed;width:10px;height:10px;top:-20px;z-index:50;
+    pointer-events:none;
+  }
+
+  /* Print */
+  @media print{
+    body{background:white;padding:0}
+    .bg-shapes,.no-print{display:none !important}
+    .card{box-shadow:none;border:1px solid #ccc}
+  }
+
+  /* Sound toggle */
+  .sound-toggle{
+    position:fixed;top:16px;right:16px;z-index:20;
+    background:white;border:none;width:46px;height:46px;border-radius:50%;
+    cursor:pointer;font-size:1.3rem;box-shadow:0 4px 12px rgba(0,0,0,.2);
+  }
+  .dash-link{
+    position:fixed;bottom:16px;right:16px;z-index:20;
+    background:rgba(255,255,255,.2);color:white;border:1px solid rgba(255,255,255,.4);
+    padding:8px 14px;border-radius:999px;cursor:pointer;font-size:.85rem;
+    backdrop-filter:blur(6px);
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-shapes">
+  <span>🎨</span><span>✏️</span><span>📚</span><span>⭐</span><span>💻</span><span>🏆</span>
+</div>
+
+<button class="sound-toggle no-print" id="soundToggle" title="Pengaturan Suara">🔊</button>
+<button class="dash-link no-print" id="dashLink">📊 Dashboard Fasilitator</button>
+
+<div class="app">
+  <div class="header">
+    <span class="kkg">🌟 KKG GUGUS 1 KECAMATAN BEDUAI 🌟</span>
+    <h1>🎨 CANVA TEACHER CHALLENGE 🏆</h1>
+    <h2>Pre-Test Pengenalan Fitur Canva untuk Guru Sekolah Dasar</h2>
+  </div>
+
+  <!-- SCREEN: WELCOME -->
+  <div class="screen active" id="screen-welcome">
+    <div class="card welcome">
+      <div style="font-size:3rem">👩‍🏫 👨‍🏫</div>
+      <h2 style="color:var(--ungu);margin:10px 0">Selamat Datang, Bapak/Ibu Guru Hebat!</h2>
+      <p class="hero">
+        Seberapa jauh Bapak/Ibu mengenal fitur <strong>Canva</strong>? Mari ikuti tantangan seru sebelum kita belajar bersama! 🚀<br>
+        <em>Game ini bukan ujian kelulusan, melainkan sarana membangun semangat belajar.</em>
+      </p>
+
+      <div class="form-row">
+        <div class="field">
+          <label>👤 Nama Peserta (opsional)</label>
+          <input type="text" id="inputName" placeholder="Contoh: Ibu Siti Aminah" />
+        </div>
+        <div class="field">
+          <label>🏫 Asal Sekolah (opsional)</label>
+          <input type="text" id="inputSchool" placeholder="Contoh: SDN 01 Beduai" />
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnStart">🚀 MULAI GAME</button>
+        <button class="btn btn-secondary" id="btnHow">📖 CARA BERMAIN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: GAME -->
+  <div class="screen" id="screen-game">
+    <div class="card">
+      <div class="game-top">
+        <div class="stat">📝 Soal <span id="qNum">1</span>/10</div>
+        <div class="stat timer" id="timerStat">⏱️ <span id="timer">20</span> dtk</div>
+        <div class="stat score">⭐ Skor: <span id="score">0</span></div>
+      </div>
+      <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+
+      <div class="question-wrap">
+        <div class="q-image" id="qImage"></div>
+        <div>
+          <div class="q-text" id="qText"></div>
+          <div class="options" id="qOptions"></div>
+          <div class="feedback" id="feedback"></div>
+        </div>
+      </div>
+
+      <div class="btn-row no-print" style="margin-top:18px">
+        <button class="btn btn-primary" id="btnNext" style="display:none">BERIKUTNYA ➡️</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: RESULT -->
+  <div class="screen" id="screen-result">
+    <div class="card result">
+      <div class="trophy" id="trophyIcon">🏆</div>
+      <h2 id="resName">Selamat!</h2>
+      <div class="title-cat" id="resCat">Canva Champion</div>
+      <div class="score-big" id="resScore">1000</div>
+      <div style="color:#6B7280;font-weight:600">POIN</div>
+
+      <div class="stats-grid">
+        <div class="stat-card"><div class="label">✅ Benar</div><div class="value" id="resCorrect">0</div></div>
+        <div class="stat-card"><div class="label">❌ Salah</div><div class="value" id="resWrong">0</div></div>
+        <div class="stat-card"><div class="label">⏰ Tidak Terjawab</div><div class="value" id="resUnanswered">0</div></div>
+        <div class="stat-card"><div class="label">📊 Persentase</div><div class="value" id="resPercent">0%</div></div>
+      </div>
+
+      <div class="note">
+        💡 <strong>Catatan:</strong> Hasil ini hanya menggambarkan pengetahuan awal Bapak/Ibu tentang Canva, bukan ukuran mutlak kemampuan. Semua guru pasti bisa menjadi ahli Canva setelah mengikuti pelatihan hari ini! 🌟
+      </div>
+
+      <div class="btn-row no-print">
+        <button class="btn btn-primary" id="btnReview">📖 LIHAT PEMBAHASAN</button>
+        <button class="btn btn-secondary" id="btnPrint">🖨️ CETAK HASIL</button>
+        <button class="btn btn-warning" id="btnReplay">🔄 MAIN LAGI</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: REVIEW -->
+  <div class="screen" id="screen-review">
+    <div class="card">
+      <h2 style="color:var(--ungu);margin-bottom:16px;text-align:center">📖 Pembahasan Soal</h2>
+      <div id="reviewList"></div>
+      <div class="btn-row no-print" style="margin-top:16px">
+        <button class="btn btn-primary" id="btnBackResult">⬅️ KEMBALI KE HASIL</button>
+        <button class="btn btn-warning" id="btnReplay2">🔄 MAIN LAGI</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: DASHBOARD -->
+  <div class="screen" id="screen-dash">
+    <div class="card">
+      <div class="dash-header">
+        <h2 style="color:var(--ungu)">📊 Dashboard Fasilitator</h2>
+        <div class="btn-row">
+          <button class="btn btn-secondary btn-sm" id="btnExport">📥 Ekspor CSV</button>
+          <button class="btn btn-warning btn-sm" id="btnPrintDash">🖨️ Cetak Laporan</button>
+          <button class="btn btn-danger btn-sm" id="btnClear">🗑️ Hapus Semua</button>
+          <button class="btn btn-ghost btn-sm" id="btnBackHome">🏠 Kembali</button>
+        </div>
+      </div>
+
+      <div class="dash-summary">
+        <div class="stat-card"><div class="label">Total Peserta</div><div class="value" id="dashTotal">0</div></div>
+        <div class="stat-card"><div class="label">Rata-rata Nilai</div><div class="value" id="dashAvg">0</div></div>
+        <div class="stat-card"><div class="label">Nilai Tertinggi</div><div class="value" id="dashMax">0</div></div>
+        <div class="stat-card"><div class="label">Nilai Terendah</div><div class="value" id="dashMin">0</div></div>
+      </div>
+
+      <h3 style="color:var(--ungu);margin:14px 0 8px">📋 Daftar Peserta</h3>
+      <div class="table-wrap">
+        <table id="dashTable">
+          <thead>
+            <tr><th>#</th><th>Nama</th><th>Sekolah</th><th>Skor</th><th>Kategori</th><th>Waktu</th></tr>
+          </thead>
+          <tbody id="dashBody"></tbody>
+        </table>
+      </div>
+
+      <h3 style="color:var(--ungu);margin:18px 0 8px">🔍 Soal Paling Banyak Salah</h3>
+      <div id="dashWrongList"></div>
+      <p style="font-size:.8rem;color:#9CA3AF;margin-top:14px;text-align:center">
+        ⚠️ Data tersimpan di perangkat ini (localStorage). Untuk pengumpulan lintas perangkat, diperlukan server terpusat.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CARA BERMAIN -->
+<div class="modal" id="modalHow">
+  <div class="box">
+    <h3>📖 Cara Bermain</h3>
+    <ul>
+      <li>Game terdiri dari <b>10 soal pilihan ganda</b> tentang fitur Canva.</li>
+      <li>Setiap soal memiliki batas waktu <b>20 detik</b>.</li>
+      <li>Jawaban benar = <b>100 poin</b>, salah/timeout = <b>0 poin</b>.</li>
+      <li>Skor maksimal <b>1.000 poin</b>.</li>
+      <li>Pilih salah satu jawaban sebelum waktu habis.</li>
+      <li>Setelah semua soal selesai, lihat pembahasan untuk belajar bersama.</li>
+      <li>Gunakan tombol 🔊 di pojok kanan atas untuk mematikan/menyalakan suara.</li>
+    </ul>
+    <h3 style="margin-top:14px">🏅 Kategori Nilai</h3>
+    <ul>
+      <li><b>0–400:</b> Penjelajah Canva 🧭</li>
+      <li><b>500–700:</b> Sahabat Canva 🤝</li>
+      <li><b>800–900:</b> Guru Kreatif 🎨</li>
+      <li><b>1.000:</b> Canva Champion 🏆</li>
+    </ul>
+    <div class="close-row">
+      <button class="btn btn-primary" onclick="document.getElementById('modalHow').classList.remove('active')">MENGERTI 👍</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONFIRM -->
+<div class="modal" id="modalConfirm">
+  <div class="box">
+    <h3 id="confirmTitle">Konfirmasi</h3>
+    <p id="confirmMsg" style="margin:10px 0 18px;color:#374151">Apakah Anda yakin?</p>
+    <div class="btn-row" style="justify-content:flex-end">
+      <button class="btn btn-ghost" id="confirmNo">Batal</button>
+      <button class="btn btn-danger" id="confirmYes">Ya, Lanjutkan</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============ DATA SOAL ============ */
+const QUESTIONS = [
+  {
+    q:"Fitur apa untuk menggunakan desain siap pakai?",
+    options:["Templates","Uploads","Elements","Projects"],
+    answer:0,
+    icon:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="20" width="70" height="70" rx="10" fill="#7C3AED"/>
+      <rect x="110" y="20" width="70" height="70" rx="10" fill="#3B82F6"/>
+      <rect x="20" y="110" width="70" height="70" rx="10" fill="#14B8A6"/>
+      <rect x="110" y="110" width="70" height="70" rx="10" fill="#FBBF24"/>
+      <text x="100" y="195" text-anchor="middle" font-size="14" font-weight="700" fill="#1E1B4B">Desain Siap Pakai</text>
+    </svg>`
+  },
+  {
+    q:"Fitur apa untuk menambahkan ikon dan bentuk?",
+    options:["Text","Elements","Share","Download"],
+    answer:1,
+    icon:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="60" cy="70" r="35" fill="#7C3AED"/>
+      <polygon points="140,35 175,100 105,100" fill="#14B8A6"/>
+      <rect x="30" y="120" width="60" height="60" fill="#FBBF24"/>
+      <polygon points="150,120 180,150 150,180 120,150" fill="#3B82F6"/>
+      <text x="100" y="195" text-anchor="middle" font-size="14" font-weight="700" fill="#1E1B4B">Ikon & Bentuk</text>
+    </svg>`
+  },
+  {
+    q:"Fitur apa untuk menambahkan tulisan?",
+    options:["Uploads","Projects","Text","Elements"],
+    answer:2,
+    icon:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <rect x="30" y="40" width="140" height="110" rx="12" fill="#EDE9FE" stroke="#7C3AED" stroke-width="3"/>
+      <text x="100" y="120" text-anchor="middle" font-size="70" font-weight="900" fill="#7C3AED" font-family="Georgia">T</text>
+      <text x="100" y="195" text-anchor="middle" font-size="14" font-weight="700" fill="#1E1B4B">Tulisan / Teks</text>
+    </svg>`
+  },
+  {
+    q:"Fitur apa untuk memasukkan foto sendiri?",
+    options:["Share","Text","Templates","Uploads"],
+    answer:3,
+    icon:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <path d="M50 110 Q50 70 100 70 Q150 70 150 110 L150 130 L50 130 Z" fill="#3B82F6"/>
+      <polygon points="100,50 85,80 115,80" fill="white"/>
+      <rect x="92" y="75" width="16" height="30" fill="white"/>
+      <rect x="60" y="135" width="80" height="8" rx="4" fill="#14B8A6"/>
+      <text x="100" y="195" text-anchor="middle" font-size="14" font-weight="700" fill="#1E1B4B">Unggah Foto</text>
+    </svg>`
+  },
+  {
+    q:"Fitur apa untuk membuat slide pembelajaran?",
+    options:["Presentasi","Download","Uploads","Elements"],
+    answer:0,
+    icon:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="30" width="160" height="100" rx="8" fill="#1E1B4B"/>
+      <rect x="28" y="38" width="144" height="84" rx="4" fill="white"/>
+      <rect x="40" y="50" width="80" height="10" rx="3" fill="#7C3AED"/>
+      <rect x="40" y="68" width="110" height="6" rx="3" fill="#E5E7EB"/>
+      <rect x="40" y="80" width="90" height="6" rx="3" fill="#E5E7EB"/>
+      <rect x="40" y="92" width="100" height="6" rx="3" fill="#E5E7EB"/>
+      <rect x="85" y="130" width="30" height="10" fill="#1E1B4B"/>
+      <rect x="70" y="140" width="60" height="6" rx="3" fill="#1E1B4B"/>
+      <text x="100" y="195" text-anchor="middle" font-size="14" font-weight="700" fill="#1E1B4B">Slide Presentasi</text>
+    </svg>`
+  },
+  {
+    q:"Apa yang digunakan untuk mengganti warna elemen?",
+    options:["Projects","Warna","Share","Text"],
+    answer:1,
+    icon:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="70" cy="80" r="30" fill="#EF4444"/>
+      <circle cx="130" cy="80" r="30" fill="#FBBF24"/>
+      <circle cx="100" cy="130" r="30" fill="#3B82F6"/>
+      <circle cx="100" cy="105" r="15" fill="#14B8A6"/>
+      <circle cx="155" cy="45" r="10" fill="#7C3AED"/>
+      <circle cx="45" cy="45" r="10" fill="#10B981"/>
+      <text x="100" y="195" text-anchor="middle" font-size="14" font-weight="700" fill="#1E1B4B">Palet Warna</text>
+    </svg>`
+  },
+  {
+    q:"Fitur apa untuk membagikan desain?",
+    options:["Download","Elements","Share","Uploads"],
+    answer:2,
+    icon:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="60" cy="60" r="20" fill="#7C3AED"/>
+      <circle cx="150" cy="50" r="16" fill="#14B8A6"/>
+      <circle cx="140" cy="140" r="18" fill="#FBBF24"/>
+      <line x1="75" y1="65" x2="135" y2="55" stroke="#3B82F6" stroke-width="4"/>
+      <line x1="70" y1="75" x2="130" y2="130" stroke="#3B82F6" stroke-width="4"/>
+      <line x1="145" y1="65" x2="145" y2="125" stroke="#3B82F6" stroke-width="4"/>
+      <text x="100" y="195" text-anchor="middle" font-size="14" font-weight="700" fill="#1E1B4B">Bagikan Desain</text>
+    </svg>`
+  },
+  {
+    q:"Fitur apa untuk mengunduh desain?",
+    options:["Text","Projects","Share","Download"],
+    answer:3,
+    icon:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <rect x="50" y="30" width="100" height="110" rx="10" fill="#DBEAFE" stroke="#3B82F6" stroke-width="3"/>
+      <polygon points="100,45 130,85 115,85 115,115 85,115 85,85 70,85" fill="#3B82F6"/>
+      <rect x="60" y="125" width="80" height="8" rx="4" fill="#14B8A6"/>
+      <text x="100" y="195" text-anchor="middle" font-size="14" font-weight="700" fill="#1E1B4B">Unduh / Download</text>
+    </svg>`
+  },
+  {
+    q:"Fitur apa untuk melihat desain atau proyek tersimpan?",
+    options:["Projects","Text","Elements","Uploads"],
+    answer:0,
+    icon:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <path d="M30 60 L80 60 L95 45 L170 45 L170 150 L30 150 Z" fill="#FBBF24" stroke="#F59E0B" stroke-width="3"/>
+      <rect x="50" y="80" width="100" height="60" rx="6" fill="white"/>
+      <rect x="60" y="90" width="50" height="6" rx="3" fill="#7C3AED"/>
+      <rect x="60" y="102" width="70" height="5" rx="2" fill="#E5E7EB"/>
+      <rect x="60" y="112" width="60" height="5" rx="2" fill="#E5E7EB"/>
+      <rect x="60" y="122" width="75" height="5" rx="2" fill="#E5E7EB"/>
+      <text x="100" y="195" text-anchor="middle" font-size="14" font-weight="700" fill="#1E1B4B">Folder Proyek</text>
+    </svg>`
+  },
+  {
+    q:"Fitur apa untuk mengatur susunan elemen?",
+    options:["Share","Layout","Uploads","Download"],
+    answer:1,
+    icon:`<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <rect x="30" y="30" width="60" height="60" rx="8" fill="#7C3AED"/>
+      <rect x="110" y="30" width="60" height="60" rx="8" fill="#3B82F6"/>
+      <rect x="30" y="110" width="140" height="50" rx="8" fill="#14B8A6"/>
+      <line x1="95" y1="25" x2="95" y2="170" stroke="#FBBF24" stroke-width="2" stroke-dasharray="4"/>
+      <line x1="25" y1="100" x2="175" y2="100" stroke="#FBBF24" stroke-width="2" stroke-dasharray="4"/>
+      <text x="100" y="195" text-anchor="middle" font-size="14" font-weight="700" fill="#1E1B4B">Tata Letak / Layout</text>
+    </svg>`
+  }
+];
+
+/* ============ STATE ============ */
+let state = {
+  name:"",school:"",
+  questions:[],
+  current:0,
+  score:0,
+  answers:[], // {selected, correct, timedOut}
+  timer:20,
+  timerId:null,
+  soundOn:true,
+  locked:false
+};
+
+/* ============ AUDIO (Web Audio API) ============ */
+let audioCtx=null;
+function beep(freq=600,dur=.15,type="sine",vol=.2){
+  if(!state.soundOn) return;
+  try{
+    if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    const o=audioCtx.createOscillator();
+    const g=audioCtx.createGain();
+    o.type=type;o.frequency.value=freq;
+    g.gain.value=vol;
+    o.connect(g);g.connect(audioCtx.destination);
+    o.start();
+    g.gain.exponentialRampToValueAtTime(0.0001,audioCtx.currentTime+dur);
+    o.stop(audioCtx.currentTime+dur);
+  }catch(e){}
+}
+function sndCorrect(){beep(880,.12,"sine",.25);setTimeout(()=>beep(1320,.18,"sine",.25),120)}
+function sndWrong(){beep(220,.25,"sawtooth",.2);setTimeout(()=>beep(150,.25,"sawtooth",.2),150)}
+function sndTick(){beep(500,.05,"square",.1)}
+function sndStart(){beep(523,.1);setTimeout(()=>beep(659,.1),100);setTimeout(()=>beep(784,.15),200)}
+function sndWin(){[523,659,784,1046].forEach((f,i)=>setTimeout(()=>beep(f,.15,"sine",.25),i*120))}
+
+/* ============ UTILS ============ */
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ============ PREPARE GAME ============ */
+function prepareGame(){
+  // Shuffle questions
+  const qOrder=shuffle([...Array(QUESTIONS.length).keys()]);
+  state.questions=qOrder.map(i=>{
+    const q=QUESTIONS[i];
+    // Shuffle options while tracking correct answer
+    const idxs=[0,1,2,3];
+    const shuffledIdx=shuffle(idxs);
+    const newAnswer=shuffledIdx.indexOf(q.answer);
+    const newOptions=shuffledIdx.map(k=>q.options[k]);
+    return {q:q.q,options:newOptions,answer:newAnswer,icon:q.icon};
+  });
+  state.current=0;state.score=0;state.answers=[];
+}
+
+/* ============ RENDER QUESTION ============ */
+function renderQuestion(){
+  const q=state.questions[state.current];
+  document.getElementById("qNum").textContent=state.current+1;
+  document.getElementById("score").textContent=state.score;
+  document.getElementById("progressBar").style.width=((state.current)/10*100)+"%";
+  document.getElementById("qText").innerHTML=`<span class="qnum">Soal ${state.current+1}</span>${q.q}`;
+  document.getElementById("qImage").innerHTML=q.icon;
+  const opts=document.getElementById("qOptions");
+  opts.innerHTML="";
+  const letters=["A","B","C","D"];
+  q.options.forEach((opt,i)=>{
+    const b=document.createElement("button");
+    b.className="option";
+    b.innerHTML=`<span class="letter">${letters[i]}</span><span>${opt}</span>`;
+    b.onclick=()=>selectAnswer(i,b);
+    opts.appendChild(b);
+  });
+  document.getElementById("feedback").classList.remove("show");
+  document.getElementById("feedback").textContent="";
+  document.getElementById("btnNext").style.display="none";
+  state.locked=false;
+  startTimer();
+}
+
+/* ============ TIMER ============ */
+function startTimer(){
+  clearInterval(state.timerId);
+  state.timer=20;
+  const tEl=document.getElementById("timer");
+  const tStat=document.getElementById("timerStat");
+  tEl.textContent=state.timer;
+  tStat.classList.remove("danger");
+  state.timerId=setInterval(()=>{
+    state.timer--;
+    tEl.textContent=state.timer;
+    if(state.timer<=5){tStat.classList.add("danger");sndTick()}
+    if(state.timer<=0){
+      clearInterval(state.timerId);
+      timeOut();
+    }
+  },1000);
+}
+function timeOut(){
+  if(state.locked) return;
+  state.locked=true;
+  const q=state.questions[state.current];
+  state.answers.push({selected:-1,correct:q.answer,timedOut:true});
+  // Show correct
+  const opts=document.querySelectorAll("#qOptions .option");
+  opts.forEach((o,i)=>{
+    o.classList.add("disabled");
+    if(i===q.answer) o.classList.add("correct");
+  });
+  const fb=document.getElementById("feedback");
+  fb.textContent=`⏰ Waktu habis! Jawaban: ${q.options[q.answer]}`;
+  fb.classList.add("show","no");
+  sndWrong();
+  document.getElementById("btnNext").style.display="inline-flex";
+}
+
+/* ============ SELECT ANSWER ============ */
+function selectAnswer(i,el){
+  if(state.locked) return;
+  state.locked=true;
+  clearInterval(state.timerId);
+  const q=state.questions[state.current];
+  const correct=i===q.answer;
+  state.answers.push({selected:i,correct:q.answer,timedOut:false});
+  if(correct){state.score+=100;document.getElementById("score").textContent=state.score;sndCorrect()}
+  else sndWrong();
+  const opts=document.querySelectorAll("#qOptions .option");
+  opts.forEach((o,j)=>{
+    o.classList.add("disabled");
+    if(j===q.answer) o.classList.add("correct");
+    if(j===i && !correct) o.classList.add("wrong");
+  });
+  const fb=document.getElementById("feedback");
+  if(correct){
+    fb.textContent=`✅ Benar! +100 poin`;
+    fb.classList.add("show","ok");
+  }else{
+    fb.textContent=`❌ Salah. Jawaban benar: ${q.options[q.answer]}`;
+    fb.classList.add("show","no");
+  }
+  document.getElementById("btnNext").style.display="inline-flex";
+}
+
+/* ============ NEXT ============ */
+function nextQuestion(){
+  state.current++;
+  if(state.current>=10){
+    finishGame();
+  }else{
+    renderQuestion();
+  }
+}
+
+/* ============ FINISH ============ */
+function finishGame(){
+  clearInterval(state.timerId);
+  const correct=state.answers.filter(a=>a.selected===a.correct).length;
+  const wrong=state.answers.filter(a=>a.selected!==-1 && a.selected!==a.correct).length;
+  const unanswered=state.answers.filter(a=>a.timedOut || a.selected===-1).length;
+  const percent=Math.round(correct/10*100);
+
+  let cat="",icon="";
+  if(state.score>=1000){cat="Canva Champion";icon="🏆"}
+  else if(state.score>=800){cat="Guru Kreatif";icon="🎨"}
+  else if(state.score>=500){cat="Sahabat Canva";icon="🤝"}
+  else{cat="Penjelajah Canva";icon="🧭"}
+
+  document.getElementById("trophyIcon").textContent=icon;
+  document.getElementById("resName").textContent=
+    (state.name?`Selamat, ${state.name}!`:"Selamat!")+(state.school?` dari ${state.school}`:"");
+  document.getElementById("resCat").textContent=cat;
+  document.getElementById("resScore").textContent=state.score;
+  document.getElementById("resCorrect").textContent=correct;
+  document.getElementById("resWrong").textContent=wrong;
+  document.getElementById("resUnanswered").textContent=unanswered;
+  document.getElementById("resPercent").textContent=percent+"%";
+
+  // Save to localStorage
+  saveResult({
+    name:state.name||"(Anonim)",
+    school:state.school||"-",
+    score:state.score,
+    category:cat,
+    correct,wrong,unanswered,percent,
+    time:new Date().toLocaleString("id-ID"),
+    answers:state.answers.map((a,i)=>({
+      q:state.questions[i].q,
+      selected:a.selected===-1?"(Tidak dijawab)":state.questions[i].options[a.selected],
+      correct:state.questions[i].options[a.correct],
+      isCorrect:a.selected===a.correct
+    }))
+  });
+
+  sndWin();
+  launchConfetti();
+  show("screen-result");
+}
+
+/* ============ CONFETTI ============ */
+function launchConfetti(){
+  const colors=["#7C3AED","#3B82F6","#14B8A6","#FBBF24","#EF4444","#10B981"];
+  for(let i=0;i<80;i++){
+    const c=document.createElement("div");
+    c.className="confetti";
+    c.style.background=colors[Math.floor(Math.random()*colors.length)];
+    c.style.left=Math.random()*100+"vw";
+    c.style.width=(6+Math.random()*8)+"px";
+    c.style.height=c.style.width;
+    c.style.borderRadius=Math.random()>.5?"50%":"2px";
+    c.style.transform=`rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(c);
+    const dur=2+Math.random()*2;
+    c.animate([
+      {transform:`translateY(0) rotate(0)`,opacity:1},
+      {transform:`translateY(100vh) rotate(${360+Math.random()*360}deg)`,opacity:0}
+    ],{duration:dur*1000,easing:"cubic-bezier(.4,0,.6,1)"});
+    setTimeout(()=>c.remove(),dur*1000);
+  }
+}
+
+/* ============ REVIEW ============ */
+function renderReview(){
+  const list=document.getElementById("reviewList");
+  list.innerHTML="";
+  state.answers.forEach((a,i)=>{
+    const q=state.questions[i];
+    const ok=a.selected===a.correct;
+    const div=document.createElement("div");
+    div.className="review-item "+(ok?"ok":"no");
+    const selText=a.selected===-1?"(Tidak dijawab / waktu habis)":q.options[a.selected];
+    div.innerHTML=`
+      <div class="q">Soal ${i+1}: ${q.q}</div>
+      <div class="ans ${ok?'':'wrong'}">Jawaban Anda: <b>${selText}</b></div>
+      <div class="ans">Jawaban Benar: <b>${q.options[q.correct]}</b></div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+/* ============ STORAGE ============ */
+const STORAGE_KEY="canva_challenge_results_v1";
+function loadResults(){
+  try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||[]}catch(e){return []}
+}
+function saveResult(r){
+  const arr=loadResults();
+  arr.push(r);
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(arr));
+}
+function clearResults(){
+  localStorage.removeItem(STORAGE_KEY);
+}
+
+/* ============ DASHBOARD ============ */
+function renderDashboard(){
+  const arr=loadResults();
+  document.getElementById("dashTotal").textContent=arr.length;
+  if(arr.length===0){
+    document.getElementById("dashAvg").textContent="0";
+    document.getElementById("dashMax").textContent="0";
+    document.getElementById("dashMin").textContent="0";
+    document.getElementById("dashBody").innerHTML=`<tr><td colspan="6" class="empty">Belum ada data peserta.</td></tr>`;
+    document.getElementById("dashWrongList").innerHTML=`<p class="empty">Belum ada data.</p>`;
+    return;
+  }
+  const scores=arr.map(r=>r.score);
+  const avg=Math.round(scores.reduce((a,b)=>a+b,0)/scores.length);
+  document.getElementById("dashAvg").textContent=avg;
+  document.getElementById("dashMax").textContent=Math.max(...scores);
+  document.getElementById("dashMin").textContent=Math.min(...scores);
+
+  const tb=document.getElementById("dashBody");
+  tb.innerHTML="";
+  arr.forEach((r,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${i+1}</td><td>${escapeHtml(r.name)}</td><td>${escapeHtml(r.school)}</td>
+      <td><b>${r.score}</b></td><td>${escapeHtml(r.category)}</td><td>${escapeHtml(r.time)}</td>`;
+    tb.appendChild(tr);
+  });
+
+  // Count wrong per question index (across all attempts)
+  const wrongCount={};
+  arr.forEach(r=>{
+    (r.answers||[]).forEach((a,idx)=>{
+      if(!a.isCorrect){
+        const key=`Soal ${idx+1}: ${a.q}`;
+        wrongCount[key]=(wrongCount[key]||0)+1;
+      }
+    });
+  });
+  const sorted=Object.entries(wrongCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const wl=document.getElementById("dashWrongList");
+  if(sorted.length===0){wl.innerHTML=`<p class="empty">Semua soal dijawab benar 🎉</p>`}
+  else{
+    wl.innerHTML=sorted.map(([q,c])=>`
+      <div style="background:#FEE2E2;padding:10px 14px;border-radius:10px;margin-bottom:8px;border-left:4px solid #EF4444">
+        <b>${escapeHtml(q)}</b> — <span style="color:#991B1B">${c} jawaban salah</span>
+      </div>`).join("");
+  }
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+
+function exportCSV(){
+  const arr=loadResults();
+  if(arr.length===0){alert("Belum ada data untuk diekspor.");return}
+  const headers=["No","Nama","Sekolah","Skor","Kategori","Benar","Salah","Tidak Terjawab","Persentase","Waktu"];
+  const rows=arr.map((r,i)=>[i+1,r.name,r.school,r.score,r.category,r.correct,r.wrong,r.unanswered,r.percent+"%",r.time]);
+  const csv=[headers,...rows].map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download=`hasil_canva_challenge_${Date.now()}.csv`;
+  a.click();URL.revokeObjectURL(url);
+}
+
+/* ============ CONFIRM MODAL ============ */
+function confirmAction(title,msg){
+  return new Promise(res=>{
+    document.getElementById("confirmTitle").textContent=title;
+    document.getElementById("confirmMsg").textContent=msg;
+    const m=document.getElementById("modalConfirm");
+    m.classList.add("active");
+    const yes=document.getElementById("confirmYes");
+    const no=document.getElementById("confirmNo");
+    const cleanup=()=>{m.classList.remove("active");yes.onclick=null;no.onclick=null};
+    yes.onclick=()=>{cleanup();res(true)};
+    no.onclick=()=>{cleanup();res(false)};
+  });
+}
+
+/* ============ EVENTS ============ */
+document.getElementById("btnStart").onclick=()=>{
+  state.name=document.getElementById("inputName").value.trim();
+  state.school=document.getElementById("inputSchool").value.trim();
+  sndStart();
+  prepareGame();
+  show("screen-game");
+  renderQuestion();
+};
+document.getElementById("btnHow").onclick=()=>{
+  document.getElementById("modalHow").classList.add("active");
+};
+document.getElementById("btnNext").onclick=nextQuestion;
+document.getElementById("btnReview").onclick=()=>{renderReview();show("screen-review")};
+document.getElementById("btnBackResult").onclick=()=>show("screen-result");
+document.getElementById("btnPrint").onclick=()=>window.print();
+document.getElementById("btnReplay").onclick=resetGame;
+document.getElementById("btnReplay2").onclick=resetGame;
+document.getElementById("btnPrintDash").onclick=()=>window.print();
+document.getElementById("btnExport").onclick=exportCSV;
+document.getElementById("btnClear").onclick=async()=>{
+  const ok=await confirmAction("Hapus Semua Data?","Seluruh hasil peserta akan dihapus permanen dari perangkat ini. Tindakan ini tidak dapat dibatalkan.");
+  if(ok){clearResults();renderDashboard();alert("Data berhasil dihapus.")}
+};
+document.getElementById("dashLink").onclick=async()=>{
+  if(loadResults().length===0){
+    const ok=await confirmAction("Dashboard Kosong","Belum ada data peserta. Buka dashboard tetap?");
+    if(!ok) return;
+  }
+  renderDashboard();
+  show("screen-dash");
+};
+document.getElementById("btnBackHome").onclick=()=>show("screen-welcome");
+document.getElementById("soundToggle").onclick=()=>{
+  state.soundOn=!state.soundOn;
+  document.getElementById("soundToggle").textContent=state.soundOn?"🔊":"🔇";
+  if(state.soundOn) beep(800,.1);
+};
+
+function resetGame(){
+  document.getElementById("inputName").value="";
+  document.getElementById("inputSchool").value="";
+  show("screen-welcome");
+}
+
+// Prevent accidental close during game
+window.addEventListener("beforeunload",e=>{
+  if(document.getElementById("screen-game").classList.contains("active")){
+    e.preventDefault();e.returnValue="";
+  }
+});
+</script>
+</body>
+</html>
